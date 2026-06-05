@@ -5,10 +5,13 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:UndirLaFlota"
     Shell.FlyoutBehavior="Disabled"
-    Title="UndirLaFlota">
+    Title="UndirLaFlota"
+    Shell.TitleColor="{StaticResource Primary}"
+    Shell.BackgroundColor="PaleTurquoise">
+
 
     <ShellContent
-        Title="Home"
+        Title="Undir la Flota"        
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage" />
 

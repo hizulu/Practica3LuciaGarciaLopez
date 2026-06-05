@@ -1,31 +1,35 @@
-
-
 namespace UndirLaFlota.Juego;
+
+public class BarcoInfo
+{
+    public int Id { get; set; }
+    public int Tamano { get; set; }
+    public int Toques { get; set; }
+    public bool Hundido => Toques >= Tamano;
+}
 
 public class Tablero
 {
     public List<List<int>> TableroList { get; set; }
     private List<int> Barcos;
+    public List<BarcoInfo> ListaBarcosInfo { get; set; }
     private int aciertos = 0;
     private int TotalPuntos;
     public int Dim;
-    
+    private int nextBarcoId = 10;
 
     public Tablero()
     {
         Dim = 10;
         TableroList = new List<List<int>>();
-        Barcos= new List<int>();
-        Barcos.Add(6);
-        Barcos.Add(5);
-        Barcos.Add(3);
-        Barcos.Add(3);
-        Barcos.Add(2);
+        Barcos = new List<int> { 6, 5, 3, 3, 2 };
+        ListaBarcosInfo = new List<BarcoInfo>();
+
         foreach (int i in Barcos)
         {
             TotalPuntos += i;
         }
-        
+
         TableroLimpio();
         GenerarTablero();
     }
@@ -41,25 +45,22 @@ public class Tablero
     private void GenerarBarco(int tamano)
     {
         Random random = new Random();
-        int x=0; 
-        int y=0; 
-        int dir=0;
-        int P_x=0;
-        int P_y=0;
+        int x = 0, y = 0, dir = 0, P_x = 0, P_y = 0, pos = 0;
         bool entra = false;
-        int pos;
+
         while (!entra)
         {
             entra = true;
-            x = random.Next(0, Dim); 
-            y = random.Next(0, Dim); 
-            dir = random.Next(0, 3);
+            x = random.Next(0, Dim);
+            y = random.Next(0, Dim);
+            dir = random.Next(0, 4);
             P_x = x;
             P_y = y;
             pos = 0;
-            while (pos<tamano)
+
+            while (pos < tamano)
             {
-                if (P_x<0 || P_x>=10 || P_y<0 || P_y>=10)
+                if (P_x < 0 || P_x >= 10 || P_y < 0 || P_y >= 10)
                 {
                     entra = false;
                     break;
@@ -72,47 +73,34 @@ public class Tablero
 
                 switch (dir)
                 {
-                    case 0:
-                        P_x++;
-                        break;
-                    case 1:
-                        P_x--;
-                        break;
-                    case 2:
-                        P_y++;
-                        break;
-                    case 3:
-                        P_y--;
-                        break;
+                    case 0: P_x++; break;
+                    case 1: P_x--; break;
+                    case 2: P_y++; break;
+                    case 3: P_y--; break;
                 }
                 pos++;
             }
         }
-        P_x = x;
-        P_y = y;
+
         if (entra)
         {
+            P_x = x;
+            P_y = y;
             pos = 0;
-            
-            while (pos<tamano)
+
+            int idActual = nextBarcoId++;
+            ListaBarcosInfo.Add(new BarcoInfo { Id = idActual, Tamano = tamano, Toques = 0 });
+
+            while (pos < tamano)
             {
-                TableroList[P_x][P_y] = 2;
+                TableroList[P_x][P_y] = idActual;
                 switch (dir)
                 {
-                    case 0:
-                        P_x++;
-                        break;
-                    case 1:
-                        P_x--;
-                        break;
-                    case 2:
-                        P_y++;
-                        break;
-                    case 3:
-                        P_y--;
-                        break;
+                    case 0: P_x++; break;
+                    case 1: P_x--; break;
+                    case 2: P_y++; break;
+                    case 3: P_y--; break;
                 }
-                
                 pos++;
             }
         }
@@ -133,29 +121,38 @@ public class Tablero
 
     public String Jugada(int x, int y)
     {
-        if (TableroList[x][y] == 0)
+        int valorCelda = TableroList[x][y];
+
+        if (valorCelda == 0) //Agua
         {
             TableroList[x][y] = 1;
             return "Agua";
-        }else if (TableroList[x][y] == 1 || TableroList[x][y] == 3)
+        }
+        else if (valorCelda == 1 || valorCelda == 3 || valorCelda < 0) //Ya se ha disparado aquí
         {
             return null;
         }
-        else if (TableroList[x][y] == 2)
+        else if (valorCelda >= 10) //Barco
         {
-            aciertos ++;
-            TableroList[x][y] = 3;
-            if ( aciertos >= TotalPuntos )
+            aciertos++;
+            TableroList[x][y] = -valorCelda; //Barco tocado
+
+            var barco = ListaBarcosInfo.FirstOrDefault(b => b.Id == valorCelda);
+            if (barco != null)
             {
-                return "Partida finalizada";
+                barco.Toques++;
+
+                if (aciertos >= TotalPuntos)
+                {
+                    return "Partida finalizada";
+                }
+                else if (barco.Hundido)
+                {
+                    return "Hundido";
+                }
             }
             return "Tocado";
         }
-
-       
-
         return null;
     }
-
-
 }
