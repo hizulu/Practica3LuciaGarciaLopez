@@ -31,28 +31,26 @@ namespace UndirLaFlota
             {
                 for (int j = 0; j < tab.Dim; j++)
                 {
-                    var button = new Button
+                    var imageButton = new ImageButton
                     {
-                        BackgroundColor = Random.Shared.Next(0, 2) == 0 ? Colors.MediumTurquoise : Colors.DarkTurquoise,
-                        Text = "OLA",
-                        TextColor = Colors.Transparent,
+                        Source = "sea.png",
                         CornerRadius = 0,
                         CommandParameter = new Tuple<int, int>(i, j)
                     };
 
-                    button.Clicked += (sender, e) =>
+                    imageButton.Clicked += (sender, e) =>
                     {
-                        var btn = sender as Button;
+                        var btn = sender as ImageButton;
                         var position = (Tuple<int, int>)btn.CommandParameter;
                         Seleccion(btn, position.Item1, position.Item2);
                     };
 
-                    TableroGrid.Add(button, i + 1, j + 1);
+                    TableroGrid.Add(imageButton, i + 1, j + 1);
                 }
             }
         }
 
-        public void Seleccion(Button btn, int row, int column)
+        public void Seleccion(ImageButton btn, int row, int column)
         {
             String str = tab.Jugada(row, column);
 
@@ -62,28 +60,31 @@ namespace UndirLaFlota
 
             if (str.Equals("Agua"))
             {
-                btn.Text = "🌊";
-                btn.BackgroundColor = Colors.Teal;
+                btn.Source = "agua_fallo.png";
             }
             else if (str.Equals("Tocado"))
             {
                 aciertosUI++;
-                btn.Text = "💥";
-                btn.BackgroundColor = Colors.Orange;
+                btn.Source = "tocado.png";
             }
             else if (str.Equals("Hundido"))
             {
                 aciertosUI++;
-                btn.Text = "☠️";
-                btn.BackgroundColor = Colors.Red;
+                btn.Source = "hundido.png";
                 DisplayAlert("¡Hundido!", "Has destruido un barco enemigo por completo.", "OK");
             }
             else if (str.Equals("Partida finalizada"))
             {
                 aciertosUI++;
-                btn.Text = "🏆";
-                btn.BackgroundColor = Colors.Gold;
+                btn.Source = "hundido.png";
                 DisplayAlert("¡Victoria!", "¡Has hundido toda la flota enemiga!", "OK");
+                DisplayAlert("Nueva Partida", "¿Quieres iniciar una nueva partida?", "Sí", "No").ContinueWith(t =>
+                {
+                    if (t.Result)
+                    {
+                        IniciarJuego();
+                    }
+                }, TaskScheduler.FromCurrentSynchronizationContext());
             }
 
             ActualizarMarcadores();
