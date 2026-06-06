@@ -16,6 +16,9 @@ namespace UndirLaFlota
             IniciarJuego();
         }
 
+        /// <summary>
+        /// Inicializa el juego creando los tableros para la máquina y el jugador, reseteando los contadores de disparos y aciertos, y generando los botones en la interfaz.
+        /// </summary>
         private void IniciarJuego()
         {
             tabMaquina = new Tablero();
@@ -31,6 +34,9 @@ namespace UndirLaFlota
             GenerarBotonesJugador();
         }
 
+        /// <summary>
+        /// Elimina los botones de los tableros de la máquina y el jugador para preparar la interfaz para una nueva partida.
+        /// </summary>
         private void LimpiarGrids()
         {
             var botonesMaquina = TableroGridEnemigo.Children.OfType<ImageButton>().ToList();
@@ -40,6 +46,9 @@ namespace UndirLaFlota
             foreach (var btn in botonesJugador) MiTableroGrid.Children.Remove(btn);
         }
 
+        /// <summary>
+        /// Genera los botones para el tablero de la máquina, asignando la imagen inicial y el evento de clic para cada botón. El evento de clic solo se activa si es el turno del jugador.
+        /// </summary>
         private void GenerarBotonesMaquina()
         {
             for (int i = 0; i < tabMaquina.Dim; i++)
@@ -66,6 +75,9 @@ namespace UndirLaFlota
             }
         }
 
+        /// <summary>
+        /// Genera los botones para el tablero del jugador, asignando la imagen inicial basada en si hay un barco o no. Estos botones no tienen eventos de clic ya que el jugador no interactúa directamente con su propio tablero.
+        /// </summary>
         private void GenerarBotonesJugador()
         {
             for (int i = 0; i < tabJugador.Dim; i++)
@@ -85,6 +97,12 @@ namespace UndirLaFlota
         }
 
         //Turno Jugador
+        /// <summary>
+        /// Maneja la selección del jugador al hacer clic en un botón del tablero de la máquina. Realiza la jugada, actualiza el contador de disparos y aciertos, cambia la imagen del botón según el resultado, y luego inicia el turno de la máquina.
+        /// </summary>
+        /// <param name="btn">El botón que el jugador ha seleccionado para disparar. Este botón se actualizará visualmente según el resultado de la jugada (agua, tocado, hundido).</param>
+        /// <param name="row">La fila del tablero de la máquina que el jugador ha seleccionado para disparar. Este valor se utiliza para determinar la posición en el tablero y realizar la jugada correspondiente.</param>
+        /// <param name="column">La columna del tablero de la máquina que el jugador ha seleccionado para disparar. Similar a la fila, este valor se utiliza para determinar la posición en el tablero y realizar la jugada correspondiente.</param>
         public async void Seleccion(ImageButton btn, int row, int column)
         {
             String str = tabMaquina.Jugada(row, column);
@@ -112,6 +130,9 @@ namespace UndirLaFlota
         }
 
         //Turno Maquina
+        /// <summary>
+        /// Realiza el turno de la máquina después de que el jugador ha hecho su jugada. La máquina selecciona aleatoriamente una posición en el tablero del jugador para disparar, verifica si la jugada es válida (no se ha disparado antes), y luego actualiza el tablero del jugador según el resultado (agua, tocado, hundido). Si la máquina hunde un barco o finaliza la partida, muestra una alerta correspondiente. Después de la jugada de la máquina, se vuelve a permitir que el jugador haga su movimiento.
+        /// </summary>
         private async void TurnoMaquina()
         {
             turnoJugador = false; 
@@ -169,12 +190,20 @@ namespace UndirLaFlota
             }
         }
 
+        /// <summary>
+        /// Actualiza los marcadores de disparos y aciertos en la interfaz de usuario después de cada jugada. Este método se llama tanto después del turno del jugador como del turno de la máquina para reflejar el estado actual del juego en la pantalla.
+        /// </summary>
         private void ActualizarMarcadores()
         {
             LblDisparos.Text = $"Disparos: {disparos}";
             LblAciertos.Text = $"Aciertos: {aciertosUI}";
         }
 
+        /// <summary>
+        /// Maneja el evento de clic para el botón de "Nueva Partida". Cuando el jugador hace clic en este botón, se llama al método IniciarJuego() para reiniciar el juego y preparar la interfaz para una nueva partida. Esto permite al jugador comenzar de nuevo sin tener que cerrar y volver a abrir la aplicación.
+        /// </summary>
+        /// <param name="sender">El objeto que envió el evento de clic, en este caso, el botón de "Nueva Partida". Este parámetro se puede utilizar para identificar qué botón fue presionado si hay múltiples botones que comparten el mismo evento de clic. Sin embargo, en este caso específico, no se utiliza dentro del método ya que solo hay un botón que desencadena esta acción.</param>
+        /// <param name="e">Los argumentos del evento de clic. Este parámetro contiene información adicional sobre el evento, como el tipo de evento, pero en este caso específico, no se utiliza dentro del método ya que no se requiere información adicional para iniciar una nueva partida. El método simplemente llama a IniciarJuego() para reiniciar el juego sin necesidad de procesar detalles específicos del evento.</param>
         private void OnNuevaPartidaClicked(object sender, EventArgs e)
         {
             IniciarJuego();
