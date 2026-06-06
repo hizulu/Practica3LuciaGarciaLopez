@@ -135,7 +135,7 @@ namespace UndirLaFlota
         /// </summary>
         private async void TurnoMaquina()
         {
-            turnoJugador = false; 
+            turnoJugador = false;
             await Task.Delay(1000);
 
             Random rnd = new Random();
@@ -156,12 +156,15 @@ namespace UndirLaFlota
 
             String resultado = tabJugador.Jugada(x, y);
 
-            var miBoton = MiTableroGrid.Children.OfType<ImageButton>().FirstOrDefault(b => Grid.GetRow(b as BindableObject) == x + 1 && Grid.GetColumn(b as BindableObject) == y + 1);
+            var miBoton = MiTableroGrid.Children.OfType<ImageButton>()
+                .FirstOrDefault(b => Grid.GetColumn(b as BindableObject) == x + 1 && Grid.GetRow(b as BindableObject) == y + 1);
 
             if (miBoton != null)
             {
-                if (resultado.Equals("Agua")) miBoton.Source = "agua_fallo.png";
-                else if (resultado.Equals("Tocado")) miBoton.Source = "hundido.png";
+                if (resultado.Equals("Agua"))
+                    miBoton.Source = "agua_fallo.png";
+                else if (resultado.Equals("Tocado"))
+                    miBoton.Source = "hundido.png";
                 else if (resultado.Equals("Hundido"))
                 {
                     miBoton.Source = "hundido.png";
